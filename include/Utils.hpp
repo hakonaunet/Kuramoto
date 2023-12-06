@@ -6,5 +6,6 @@
 #include <cmath>
 
 sf::Color angleToColor(double angle);
+int oscillatorSize(const sf::Vector2f& size, int N);
 
 #endif

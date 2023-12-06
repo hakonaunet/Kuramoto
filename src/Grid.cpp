@@ -1,12 +1,13 @@
 // Grid.cpp
 #include "Grid.hpp"
-#include <cmath>
-#include <random>
 
-Grid::Grid(int rows, int cols, Coupling couplingMethod) 
-    : currentCoupling(couplingMethod) {
-    for (int i = 0; i < rows; i++) {
-        grid.push_back(std::vector<Oscillator>(cols));
+Grid::Grid(SharedData& data) : sharedData(data) {
+    for (int i = 0; i < sharedData.N; i++) {
+        std::vector<Oscillator> row;
+        for (int j = 0; j < sharedData.N; j++) {
+            row.push_back(Oscillator(sharedData.epsilon));
+        }
+        grid.push_back(row);
     }
 }
 
@@ -99,7 +100,9 @@ double Grid::kuramotoSum(int x, int y, Coupling couplingMethod) {
 // Function to update the grid using RK4
 void Grid::updateGrid() {
     double K = 1.0; // Set the coupling strength
-    double dt = 0.05; // Time step
+    double dt = sharedData.deltaTime; // Time step
+    sharedData.simulationTime += dt; // Update simulation time
+    sharedData.frameCount++; // Update frame count
 
     #pragma omp parallel for collapse(2) // Parallelize both x and y loops
     for (int x = 0; x < grid.size(); x++) {
@@ -109,10 +112,10 @@ void Grid::updateGrid() {
             double omega = osc.getIntrinsicFrequency();
 
             // RK4 integration
-            double k1 = dt * (omega + K * kuramotoSum(x, y, currentCoupling));
-            double k2 = dt * (omega + K * kuramotoSum(x, y, currentCoupling) + 0.5 * k1);
-            double k3 = dt * (omega + K * kuramotoSum(x, y, currentCoupling) + 0.5 * k2);
-            double k4 = dt * (omega + K * kuramotoSum(x, y, currentCoupling) + k3);
+            double k1 = dt * (omega + K * kuramotoSum(x, y, sharedData.coupling));
+            double k2 = dt * (omega + K * kuramotoSum(x, y, sharedData.coupling) + 0.5 * k1);
+            double k3 = dt * (omega + K * kuramotoSum(x, y, sharedData.coupling) + 0.5 * k2);
+            double k4 = dt * (omega + K * kuramotoSum(x, y, sharedData.coupling) + k3);
 
             osc.setAngle(theta + (k1 + 2 * k2 + 2 * k3 + k4) / 6);
         }

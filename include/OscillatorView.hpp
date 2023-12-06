@@ -2,9 +2,10 @@
 #ifndef OSCILLATOR_VIEW_HPP
 #define OSCILLATOR_VIEW_HPP
 
+#include <SFML/Graphics/RectangleShape.hpp>
+
 #include "Grid.hpp"
 #include "Utils.hpp"
-#include <SFML/Graphics/RectangleShape.hpp>
 
 class OscillatorView {
 public:
