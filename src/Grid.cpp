@@ -104,6 +104,8 @@ void Grid::updateGrid() {
     sharedData.simulationTime += dt; // Update simulation time
     sharedData.frameCount++; // Update frame count
 
+    auto startTime = std::chrono::high_resolution_clock::now(); // Start measuring time
+
     #pragma omp parallel for collapse(2) // Parallelize both x and y loops
     for (int x = 0; x < grid.size(); x++) {
         for (int y = 0; y < grid[0].size(); y++) {
@@ -120,6 +122,10 @@ void Grid::updateGrid() {
             osc.setAngle(theta + (k1 + 2 * k2 + 2 * k3 + k4) / 6);
         }
     }
+
+    auto endTime = std::chrono::high_resolution_clock::now(); // Stop measuring time
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
+    sharedData.updateTime = duration.count(); // Update the updateTime variable
 }
 
 

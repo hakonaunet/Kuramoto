@@ -60,16 +60,15 @@ void UI::render() {
     }
 
     // Button to pause/resume the simulation
-    if (sharedData.isSimulationRunning) {
+    if (!sharedData.isPaused) {
         if (ImGui::Button("Pause Simulation")) {
-            sharedData.isSimulationRunning = false;
+            pause();
         }
-    } else {
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.2f, 1.0f)); // Set button color to green
+    }
+    else {
         if (ImGui::Button("Resume Simulation")) {
-            sharedData.isSimulationRunning = true;
+            resume();
         }
-        ImGui::PopStyleColor();
     }
 
     // Display runtime information if simulation is running
@@ -77,15 +76,35 @@ void UI::render() {
         ImGui::Text("Runtime: %s seconds", getRuntime().c_str());
         ImGui::Text("Simulation Time: %s seconds", getSimulationTime().c_str());
         ImGui::Text("Frames Rendered: %d", sharedData.frameCount);
+        auto now = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsedTime = now - lastUpdateTime;
+        if (elapsedTime.count() > minUpdateInterval) {
+            ImGui::Text("Update Time: %f seconds", sharedData.updateTime);
+            lastUpdateTime = now;
+        }
     }
-
     ImGui::End();
 }
 
+void UI::pause() {
+    sharedData.isPaused = true;
+    pauseStartTime = std::chrono::steady_clock::now();
+}
+
+void UI::resume() {
+    sharedData.isPaused = false;
+    totalPauseTime += std::chrono::steady_clock::now() - pauseStartTime;
+}
+
 std::string UI::getRuntime() const {
-    // Inside your UI update/rendering loop
+    static std::string lastFormattedTime; // Static variable to store the last returned string
+
+    if (sharedData.isPaused) {
+        return lastFormattedTime; // Return the last formatted time if simulation is paused
+    }
+
     auto currentTime = std::chrono::steady_clock::now();
-    std::chrono::duration<float> runtime = currentTime - sharedData.startTime;
+    std::chrono::duration<float> runtime = currentTime - sharedData.startTime - totalPauseTime;
 
     // Convert runtime to hours, minutes, and seconds
     int hours = int(runtime.count()) / 3600;
@@ -98,9 +117,9 @@ std::string UI::getRuntime() const {
         << std::setw(2) << std::setfill('0') << minutes << ":"
         << std::setw(2) << std::setfill('0') << seconds;
 
-    std::string formattedTime = ss.str();
+    lastFormattedTime = ss.str(); // Update the last formatted time
 
-    return formattedTime;
+    return lastFormattedTime;
 }
 
 std::string UI::getSimulationTime() const {
