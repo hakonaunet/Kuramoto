@@ -23,6 +23,8 @@ private:
     
     std::vector<std::vector<Oscillator>> grid;
 
+    bool calculateOrderParameter;
+
     std::vector<Oscillator*> getNeighbors4(int x, int y);
     std::vector<Oscillator*> getNeighbors8(int x, int y);
     

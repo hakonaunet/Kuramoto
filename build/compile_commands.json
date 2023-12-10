@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/haakolau/Projects/Master/Kuramoto/build",
+  "command": "/usr/bin/c++  -I/home/haakolau/Projects/Master/Kuramoto/include -g -o CMakeFiles/Kuramoto.dir/src/main.cpp.o -c /home/haakolau/Projects/Master/Kuramoto/src/main.cpp",
+  "file": "/home/haakolau/Projects/Master/Kuramoto/src/main.cpp"
+},
+{
+  "directory": "/home/haakolau/Projects/Master/Kuramoto/build",
+  "command": "/usr/bin/c++  -I/home/haakolau/Projects/Master/Kuramoto/include -g -o CMakeFiles/Kuramoto.dir/src/Oscillator.cpp.o -c /home/haakolau/Projects/Master/Kuramoto/src/Oscillator.cpp",
+  "file": "/home/haakolau/Projects/Master/Kuramoto/src/Oscillator.cpp"
+},
+{
+  "directory": "/home/haakolau/Projects/Master/Kuramoto/build",
+  "command": "/usr/bin/c++  -I/home/haakolau/Projects/Master/Kuramoto/include -g -o CMakeFiles/Kuramoto.dir/src/Grid.cpp.o -c /home/haakolau/Projects/Master/Kuramoto/src/Grid.cpp",
+  "file": "/home/haakolau/Projects/Master/Kuramoto/src/Grid.cpp"
+}
+]

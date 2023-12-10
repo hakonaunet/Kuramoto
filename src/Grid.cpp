@@ -9,6 +9,8 @@ Grid::Grid(SharedData& data) : sharedData(data) {
         }
         grid.push_back(row);
     }
+    sharedData.startTime = std::chrono::high_resolution_clock::now();
+    calculateOrderParameter = sharedData.calculateKuramotoOrderParameter;
 }
 
 std::vector<Oscillator*> Grid::getNeighbors4(int x, int y) {
@@ -102,7 +104,7 @@ void Grid::updateGrid() {
     double K = 1.0; // Set the coupling strength
     double dt = sharedData.deltaTime; // Time step
     sharedData.simulationTime += dt; // Update simulation time
-    sharedData.frameCount++; // Update frame count
+    sharedData.iteration++; // Update frame count
 
     auto startTime = std::chrono::high_resolution_clock::now(); // Start measuring time
 
@@ -123,9 +125,14 @@ void Grid::updateGrid() {
         }
     }
 
-    auto endTime = std::chrono::high_resolution_clock::now(); // Stop measuring time
+    // Calculate the Kuramoto order parameter
+    if (calculateOrderParameter) {
+
+    }
+
+    auto endTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
-    sharedData.updateTime = duration.count(); // Update the updateTime variable
+    sharedData.updateTime = static_cast<double>(duration.count());
 }
 
 

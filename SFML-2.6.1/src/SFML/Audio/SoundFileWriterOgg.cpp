@@ -142,23 +142,23 @@ void SoundFileWriterOgg::write(const Int16* samples, Uint64 count)
     static const int bufferSize = 65536;
 
     // A frame contains a sample from each channel
-    int frameCount = static_cast<int>(count / m_channelCount);
+    int iteration = static_cast<int>(count / m_channelCount);
 
-    while (frameCount > 0)
+    while (iteration > 0)
     {
         // Prepare a buffer to hold our samples
         float** buffer = vorbis_analysis_buffer(&m_state, bufferSize);
         assert(buffer);
 
         // Write the samples to the buffer, converted to float
-        for (int i = 0; i < std::min(frameCount, bufferSize); ++i)
+        for (int i = 0; i < std::min(iteration, bufferSize); ++i)
             for (unsigned int j = 0; j < m_channelCount; ++j)
                 buffer[j][i] = *samples++ / 32767.0f;
 
         // Tell the library how many samples we've written
-        vorbis_analysis_wrote(&m_state, std::min(frameCount, bufferSize));
+        vorbis_analysis_wrote(&m_state, std::min(iteration, bufferSize));
 
-        frameCount -= bufferSize;
+        iteration -= bufferSize;
 
         // Flush any produced block
         flushBlocks();

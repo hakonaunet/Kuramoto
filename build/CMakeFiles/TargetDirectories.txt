@@ -1,0 +1,3 @@
+/home/haakolau/Projects/Master/Kuramoto/build/CMakeFiles/Kuramoto.dir
+/home/haakolau/Projects/Master/Kuramoto/build/CMakeFiles/edit_cache.dir
+/home/haakolau/Projects/Master/Kuramoto/build/CMakeFiles/rebuild_cache.dir

@@ -5,11 +5,11 @@
 void UI::render() {
     ImGui::Begin("Simulation Controls");
 
-    ImGui::SliderFloat("Delta Time", &sharedData.deltaTime, 0.001f, 1.0f);
+    ImGui::SliderFloat("Time step", &sharedData.deltaTime, 0.001f, 1.0f);
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Time step for simulation");
     }
-    ImGui::SliderInt("Grid Size", &sharedData.N, 1, 1300);
+    ImGui::SliderInt("Grid Size", &sharedData.N, 1, 1350);
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Sidelength for the square grid of oscillators");
     }
@@ -52,10 +52,21 @@ void UI::render() {
         ImGui::SetTooltip("Enable to set a new random seed for random results, or disable to use a fixed seed for consistent results");
     }
 
+    ImGui::SameLine(); // Display the following widgets on the same line
+
+    // Button to set sharedData.calculateKuramotoOrderParameter
+    if (ImGui::Checkbox("Calculate Order Parameter", &sharedData.calculateKuramotoOrderParameter)) {
+        sharedData.calculateKuramotoOrderParameter = true;
+    }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Enable to calculate the Kuramoto order parameter");
+    }
+
     // Button to start the simulation
     if (ImGui::Button("Run Simulation")) {
         // Set flag to start simulation
         sharedData.isSimulationRunning = true;
+        sharedData.startSimulation = true;
         // Update simulation parameters based on UI input
     }
 
@@ -75,11 +86,12 @@ void UI::render() {
     if (sharedData.isSimulationRunning) {
         ImGui::Text("Runtime: %s seconds", getRuntime().c_str());
         ImGui::Text("Simulation Time: %s seconds", getSimulationTime().c_str());
-        ImGui::Text("Frames Rendered: %d", sharedData.frameCount);
+        ImGui::Text("Iteration: %d", sharedData.iteration);
+        // Ensure that the UI updates are not too frequent
         auto now = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsedTime = now - lastUpdateTime;
-        if (elapsedTime.count() > minUpdateInterval) {
-            ImGui::Text("Update Time: %f seconds", sharedData.updateTime);
+        if (elapsedTime > minUpdateInterval) {
+            ImGui::Text("Update Time: %.6f seconds", sharedData.updateTime / 1e6);
             lastUpdateTime = now;
         }
     }
@@ -88,53 +100,42 @@ void UI::render() {
 
 void UI::pause() {
     sharedData.isPaused = true;
-    pauseStartTime = std::chrono::steady_clock::now();
+    pauseStartTime = std::chrono::high_resolution_clock::now();
 }
 
 void UI::resume() {
     sharedData.isPaused = false;
-    totalPauseTime += std::chrono::steady_clock::now() - pauseStartTime;
+    sharedData.totalPauseTime += std::chrono::high_resolution_clock::now() - pauseStartTime;
+}
+
+std::string UI::formatTime(int timeInSeconds) const {
+    // Convert time to hours, minutes, and seconds
+    int hours = timeInSeconds / 3600;
+    int minutes = (timeInSeconds / 60) % 60;
+    int seconds = timeInSeconds % 60;
+
+    // Format the time
+    std::stringstream ss;
+    ss << std::setw(2) << std::setfill('0') << hours << ":"
+        << std::setw(2) << std::setfill('0') << minutes << ":"
+        << std::setw(2) << std::setfill('0') << seconds;
+
+    return ss.str();
 }
 
 std::string UI::getRuntime() const {
     static std::string lastFormattedTime; // Static variable to store the last returned string
-
     if (sharedData.isPaused) {
         return lastFormattedTime; // Return the last formatted time if simulation is paused
     }
-
-    auto currentTime = std::chrono::steady_clock::now();
-    std::chrono::duration<float> runtime = currentTime - sharedData.startTime - totalPauseTime;
-
-    // Convert runtime to hours, minutes, and seconds
-    int hours = int(runtime.count()) / 3600;
-    int minutes = (int(runtime.count()) / 60) % 60;
-    int seconds = int(runtime.count()) % 60;
-
-    // Format the time
-    std::stringstream ss;
-    ss << std::setw(2) << std::setfill('0') << hours << ":"
-        << std::setw(2) << std::setfill('0') << minutes << ":"
-        << std::setw(2) << std::setfill('0') << seconds;
-
-    lastFormattedTime = ss.str(); // Update the last formatted time
-
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> runtime = currentTime - sharedData.startTime - sharedData.totalPauseTime;
+    int runtimeInSeconds = int(runtime.count());
+    lastFormattedTime = formatTime(runtimeInSeconds); // Update the last formatted time
     return lastFormattedTime;
 }
 
 std::string UI::getSimulationTime() const {
-    // Convert simulation time to hours, minutes, and seconds
-    int hours = int(sharedData.simulationTime) / 3600;
-    int minutes = (int(sharedData.simulationTime) / 60) % 60;
-    int seconds = int(sharedData.simulationTime) % 60;
-
-    // Format the time
-    std::stringstream ss;
-    ss << std::setw(2) << std::setfill('0') << hours << ":"
-        << std::setw(2) << std::setfill('0') << minutes << ":"
-        << std::setw(2) << std::setfill('0') << seconds;
-
-    std::string formattedTime = ss.str();
-
-    return formattedTime;
+    int simulationTimeInSeconds = int(sharedData.simulationTime);
+    return formatTime(simulationTimeInSeconds);
 }

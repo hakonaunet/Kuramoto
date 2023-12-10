@@ -39,6 +39,17 @@ void Application::run() {
             grid = std::make_unique<Grid>(sharedData);
             // Create a new OscillatorView with the new Grid
             view = std::make_unique<OscillatorView>(*grid, oscillatorSize);
+            // Reset the flag
+            sharedData.startSimulation = false;
+        }
+        if (sharedData.startSimulation) {
+            // Create a new Grid object with the current settings
+            grid = std::make_unique<Grid>(sharedData);
+            // Create a new OscillatorView with the new Grid
+            view = std::make_unique<OscillatorView>(*grid, oscillatorSize);
+            // Reset the flag
+            sharedData.reset();
+            sharedData.startSimulation = false;
         }
 
         // Clear the window
