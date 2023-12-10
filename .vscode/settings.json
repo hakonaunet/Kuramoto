@@ -63,6 +63,7 @@
         "iomanip": "cpp",
         "cinttypes": "cpp",
         "typeindex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "complex": "cpp"
     }
 }

@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <random>
+#include <complex>
 
 #include "Oscillator.hpp"
 #include "SharedData.hpp"
@@ -23,7 +24,10 @@ private:
     
     std::vector<std::vector<Oscillator>> grid;
 
-    bool calculateOrderParameter;
+    bool findOrderParameter;
+    std::vector<double> simulationTimes;
+    std::vector<std::complex<double>> orderParameters;
+    std::complex<double> calculateOrderParameter();
 
     std::vector<Oscillator*> getNeighbors4(int x, int y);
     std::vector<Oscillator*> getNeighbors8(int x, int y);

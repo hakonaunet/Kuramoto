@@ -10,7 +10,17 @@ Grid::Grid(SharedData& data) : sharedData(data) {
         grid.push_back(row);
     }
     sharedData.startTime = std::chrono::high_resolution_clock::now();
-    calculateOrderParameter = sharedData.calculateKuramotoOrderParameter;
+
+    // Initialize the order parameter calculation if flag is set
+    if (findOrderParameter) {
+        std::complex orderParameter = calculateOrderParameter(); // Replace with your actual function
+        simulationTimes.push_back(sharedData.simulationTime);
+        orderParameters.push_back(orderParameter);
+    }
+    else {
+        simulationTimes.clear();
+        orderParameters.clear();
+    }
 }
 
 std::vector<Oscillator*> Grid::getNeighbors4(int x, int y) {
@@ -127,7 +137,9 @@ void Grid::updateGrid() {
 
     // Calculate the Kuramoto order parameter
     if (calculateOrderParameter) {
-
+        std::complex orderParameter = calculateOrderParameter(); // Replace with your actual function
+        simulationTimes.push_back(sharedData.simulationTime);
+        orderParameters.push_back(orderParameter);
     }
 
     auto endTime = std::chrono::high_resolution_clock::now();
@@ -135,6 +147,24 @@ void Grid::updateGrid() {
     sharedData.updateTime = static_cast<double>(duration.count());
 }
 
+// Function to calculate the Kuramoto order parameter
+std::complex<double> Grid::calculateOrderParameter() {
+    std::complex<double> orderParameter(0.0, 0.0);
+    int N = grid.size() * grid[0].size(); // Total number of oscillators
+
+    #pragma omp parallel for collapse(2) // Parallelize both x and y loops
+    for (int x = 0; x < grid.size(); x++) {
+        for (int y = 0; y < grid[0].size(); y++) {
+            Oscillator& osc = grid[x][y];
+            double theta = osc.getAngle();
+            std::complex<double> exp_i_theta(std::cos(theta), std::sin(theta));
+            #pragma omp atomic
+            orderParameter += exp_i_theta;
+        }
+    }
+
+    return orderParameter / static_cast<double>(N);
+}
 
 std::vector<std::vector<Oscillator>>& Grid::getGrid() {
     return grid;
