@@ -95,6 +95,11 @@ void UI::render() {
             lastUpdateTime = now;
         }
     }
+
+    if (ImGui::Button("Plot Order Parameter")) {
+        // Plot the order parameter
+        // ... 
+    }
     ImGui::End();
 }
 

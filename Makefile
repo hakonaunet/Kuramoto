@@ -1,7 +1,8 @@
 # Compiler and Flags
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -I/usr/local/include -I./imgui -I./imgui-sfml -Iinclude
-
+CXXFLAGS = -std=c++20 -Wall -I/usr/local/include \
+		   -I./imgui -I./imgui-sfml -Iinclude \
+		   -I/home/haakolau/.local/lib/python3.11/site-packages/pybind11/include
 # Directories
 SRC_DIR = src
 OBJ_DIR = obj

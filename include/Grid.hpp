@@ -10,14 +10,19 @@
 #include "Coupling.hpp"
 
 #include <omp.h>
+#include <pybind11/embed.h>
+namespace py = pybind11;
 
 class Grid {
 public:
     Grid(SharedData& data);
 
     void updateGrid();
+    
     std::vector<std::vector<Oscillator>>& getGrid(); // Non-const version
     const std::vector<std::vector<Oscillator>>& getGrid() const; // Const version
+
+    void plotOrderParameter() const;
 
 private:
     SharedData& sharedData;

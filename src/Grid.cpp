@@ -173,3 +173,22 @@ std::vector<std::vector<Oscillator>>& Grid::getGrid() {
 const std::vector<std::vector<Oscillator>>& Grid::getGrid() const {
     return grid;
 }
+
+void Grid::plotOrderParameter() const {
+    py::scoped_interpreter guard{}; // Start the interpreter
+
+    // Convert the data to Python lists
+    py::list pySimulationTimes;
+    for (double t : simulationTimes) {
+        pySimulationTimes.append(t);
+    }
+
+    py::list pyOrderParameters;
+    for (const auto& op : orderParameters) {
+        pyOrderParameters.append(std::abs(op)); // Use the absolute value of the order parameter
+    }
+
+    // Import the Python script and call the plot_data function
+    py::object plot_data = py::module::import("pyplot/PlotOrderParameter.py").attr("plot_data");
+    plot_data(pySimulationTimes, pyOrderParameters, "plot.png");
+}
