@@ -4,6 +4,7 @@
 #include <cmath>
 #include <random>
 #include <complex>
+#include <iostream>
 
 #include "Oscillator.hpp"
 #include "SharedData.hpp"
@@ -34,8 +35,8 @@ private:
     std::vector<std::complex<double>> orderParameters;
     std::complex<double> calculateOrderParameter();
 
-    std::vector<Oscillator*> getNeighbors4(int x, int y);
-    std::vector<Oscillator*> getNeighbors8(int x, int y);
+    std::vector<Oscillator*> getNeighbors4(size_t x, size_t y);
+    std::vector<Oscillator*> getNeighbors8(size_t x, size_t y);
     
     // Updated signature to use grid positions for distance calculation
     double computeCouplingStrength(int x1, int y1, int x2, int y2, Coupling method);

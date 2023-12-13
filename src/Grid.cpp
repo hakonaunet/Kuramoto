@@ -2,28 +2,33 @@
 #include "Grid.hpp"
 
 Grid::Grid(SharedData& data) : sharedData(data) {
-    for (int i = 0; i < sharedData.N; i++) {
-        std::vector<Oscillator> row;
-        for (int j = 0; j < sharedData.N; j++) {
-            row.push_back(Oscillator(sharedData.epsilon));
+    try {
+        for (int i = 0; i < sharedData.N; i++) {
+            std::vector<Oscillator> row;
+            for (int j = 0; j < sharedData.N; j++) {
+                row.push_back(Oscillator(sharedData.epsilon));
+            }
+            grid.push_back(row);
         }
-        grid.push_back(row);
-    }
-    sharedData.startTime = std::chrono::high_resolution_clock::now();
+        sharedData.startTime = std::chrono::high_resolution_clock::now();
 
-    // Initialize the order parameter calculation if flag is set
-    if (findOrderParameter) {
-        std::complex orderParameter = calculateOrderParameter(); // Replace with your actual function
-        simulationTimes.push_back(sharedData.simulationTime);
-        orderParameters.push_back(orderParameter);
-    }
-    else {
-        simulationTimes.clear();
-        orderParameters.clear();
+        // Initialize the order parameter calculation if flag is set
+        if (findOrderParameter) {
+            std::complex orderParameter = calculateOrderParameter(); // Replace with your actual function
+            simulationTimes.push_back(sharedData.simulationTime);
+            orderParameters.push_back(orderParameter);
+        }
+        else {
+            simulationTimes.clear();
+            orderParameters.clear();
+        }
+    } catch (const std::bad_alloc& e) {
+        std::cerr << "Memory allocation failed: " << e.what() << std::endl;
+        // Handle the error (e.g., by cleaning up and terminating the program)
     }
 }
 
-std::vector<Oscillator*> Grid::getNeighbors4(int x, int y) {
+std::vector<Oscillator*> Grid::getNeighbors4(size_t x, size_t y) {
     std::vector<Oscillator*> neighbors;
     if (x > 0) neighbors.push_back(&grid[x - 1][y]);
     if (x < grid.size() - 1) neighbors.push_back(&grid[x + 1][y]);
@@ -32,7 +37,7 @@ std::vector<Oscillator*> Grid::getNeighbors4(int x, int y) {
     return neighbors;
 }
 
-std::vector<Oscillator*> Grid::getNeighbors8(int x, int y) {
+std::vector<Oscillator*> Grid::getNeighbors8(size_t x, size_t y) {
     std::vector<Oscillator*> neighbors = getNeighbors4(x, y);
     if (x > 0 && y > 0) neighbors.push_back(&grid[x - 1][y - 1]);
     if (x > 0 && y < grid[0].size() - 1) neighbors.push_back(&grid[x - 1][y + 1]);
@@ -119,8 +124,8 @@ void Grid::updateGrid() {
     auto startTime = std::chrono::high_resolution_clock::now(); // Start measuring time
 
     #pragma omp parallel for collapse(2) // Parallelize both x and y loops
-    for (int x = 0; x < grid.size(); x++) {
-        for (int y = 0; y < grid[0].size(); y++) {
+    for (size_t x = 0; x < grid.size(); x++) {
+        for (size_t y = 0; y < grid[0].size(); y++) {
             Oscillator& osc = grid[x][y];
             double theta = osc.getAngle();
             double omega = osc.getIntrinsicFrequency();
@@ -136,7 +141,7 @@ void Grid::updateGrid() {
     }
 
     // Calculate the Kuramoto order parameter
-    if (calculateOrderParameter) {
+    if (findOrderParameter) {
         std::complex orderParameter = calculateOrderParameter(); // Replace with your actual function
         simulationTimes.push_back(sharedData.simulationTime);
         orderParameters.push_back(orderParameter);
@@ -153,8 +158,8 @@ std::complex<double> Grid::calculateOrderParameter() {
     int N = grid.size() * grid[0].size(); // Total number of oscillators
 
     #pragma omp parallel for collapse(2) // Parallelize both x and y loops
-    for (int x = 0; x < grid.size(); x++) {
-        for (int y = 0; y < grid[0].size(); y++) {
+    for (size_t x = 0; x < grid.size(); x++) {
+        for (size_t y = 0; y < grid[0].size(); y++) {
             Oscillator& osc = grid[x][y];
             double theta = osc.getAngle();
             std::complex<double> exp_i_theta(std::cos(theta), std::sin(theta));

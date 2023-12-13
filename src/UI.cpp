@@ -21,13 +21,13 @@ void UI::render() {
     // ImGui drop down menu with options from the enum class 'Couplings'
     std::string couplingOptionsStr[] = { "None", "Nearest4", "Nearest8", "DistanceR", "DistanceR2", "Uniform" };
     const char* couplingOptions[sizeof(couplingOptionsStr) / sizeof(std::string)];
-    for (int i = 0; i < sizeof(couplingOptionsStr) / sizeof(std::string); ++i) {
+    for (size_t i = 0; i < sizeof(couplingOptionsStr) / sizeof(std::string); ++i) {
         couplingOptions[i] = couplingOptionsStr[i].c_str();
     }
 
     // ImGui dropdown menu to select coupling option
     if (ImGui::BeginCombo("Coupling", couplingOptions[static_cast<int>(sharedData.coupling)])) {
-        for (int i = 0; i < sizeof(couplingOptions) / sizeof(const char*); ++i) {
+        for (size_t i = 0; i < sizeof(couplingOptions) / sizeof(const char*); ++i) {
             bool isSelected = (sharedData.coupling == static_cast<Coupling>(i));
             if (ImGui::Selectable(couplingOptions[i], isSelected)) {
                 sharedData.coupling = static_cast<Coupling>(i);
@@ -55,9 +55,7 @@ void UI::render() {
     ImGui::SameLine(); // Display the following widgets on the same line
 
     // Button to set sharedData.calculateKuramotoOrderParameter
-    if (ImGui::Checkbox("Calculate Order Parameter", &sharedData.calculateKuramotoOrderParameter)) {
-        sharedData.calculateKuramotoOrderParameter = true;
-    }
+    ImGui::Checkbox("Calculate Order Parameter", &sharedData.calculateKuramotoOrderParameter);
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Enable to calculate the Kuramoto order parameter");
     }
@@ -67,7 +65,6 @@ void UI::render() {
         // Set flag to start simulation
         sharedData.isSimulationRunning = true;
         sharedData.startSimulation = true;
-        // Update simulation parameters based on UI input
     }
 
     // Button to pause/resume the simulation
@@ -97,8 +94,7 @@ void UI::render() {
     }
 
     if (ImGui::Button("Plot Order Parameter")) {
-        // Plot the order parameter
-        // ... 
+        //grid.plotOrderParameter(grid.simulationTimes, grid.orderParameters); 
     }
     ImGui::End();
 }

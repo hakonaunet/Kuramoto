@@ -12,12 +12,11 @@
 
 #include "SharedData.hpp"
 #include "Coupling.hpp"
+#include "Grid.hpp"
 
 class UI {
     public:
-        UI(SharedData& data) : sharedData(data) {
-            auto lastUpdateTime = std::chrono::high_resolution_clock::now();
-        }
+        UI(SharedData& data) : sharedData(data), lastUpdateTime(std::chrono::high_resolution_clock::now()) {}
 
         void render(); // Implement the UI rendering logic
 
@@ -32,6 +31,6 @@ class UI {
     private:
         SharedData& sharedData;
         // Member variables to handle UI update frequency
-        std::chrono::high_resolution_clock::time_point lastUpdateTime;
         const std::chrono::milliseconds minUpdateInterval{200};
+        std::chrono::high_resolution_clock::time_point lastUpdateTime;
 };

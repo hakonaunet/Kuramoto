@@ -64,6 +64,7 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "variant": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "forward_list": "cpp"
     }
 }

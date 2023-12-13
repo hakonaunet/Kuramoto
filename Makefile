@@ -1,8 +1,8 @@
 # Compiler and Flags
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -I/usr/local/include \
-		   -I./imgui -I./imgui-sfml -Iinclude \
-		   -I/home/haakolau/.local/lib/python3.11/site-packages/pybind11/include
+CXXFLAGS = -std=c++20 -Wall -I/usr/include/python3.11 \
+           -I/usr/local/include -I./imgui -I./imgui-sfml \
+           -Iinclude -I/home/haakolau/.local/lib/python3.11/site-packages/pybind11/include
 # Directories
 SRC_DIR = src
 OBJ_DIR = obj
@@ -11,7 +11,8 @@ INCLUDE_DIR = include
 # Libraries
 SFML = -lsfml-graphics -lsfml-window -lsfml-system
 OPENGL_LIBS = -lGL
-LIBS = -L/usr/local/lib $(SFML) $(OPENGL_LIBS)
+PYTHON_LIB = -L/usr/lib/python3.11/config-3.11-x86_64-linux-gnu -lpython3.11
+LIBS = -L/usr/local/lib $(SFML) $(OPENGL_LIBS) $(PYTHON_LIB)
 
 # All cpp and corresponding obj files
 IMGUI_SRC = $(wildcard ./imgui/*.cpp) $(wildcard ./imgui-sfml/*.cpp)
