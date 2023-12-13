@@ -21,11 +21,12 @@ struct SharedData {
     bool isSimulationRunning;
     bool isPaused;
     bool startSimulation;
-    bool calculateKuramotoOrderParameter;
+    bool trackKuramotoOrderParameter;
+    bool shouldPlotOrderParameter;
 
     SharedData() : N(20), deltaTime(0.1), coupling(Coupling::Uniform), epsilon(0.1),
     updateTime(0), isSimulationRunning(false), isPaused(false), startSimulation(false),
-    calculateKuramotoOrderParameter(false) {
+    trackKuramotoOrderParameter(false), shouldPlotOrderParameter(false) {
     reset();
     }
 

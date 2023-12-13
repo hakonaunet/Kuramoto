@@ -180,7 +180,9 @@ const std::vector<std::vector<Oscillator>>& Grid::getGrid() const {
 }
 
 void Grid::plotOrderParameter() const {
-    py::scoped_interpreter guard{}; // Start the interpreter
+
+    std::cout << "Length of simulationTimes: " << simulationTimes.size() << std::endl;
+    std::cout << "Length of orderParameters: " << orderParameters.size() << std::endl;
 
     // Convert the data to Python lists
     py::list pySimulationTimes;
@@ -193,7 +195,23 @@ void Grid::plotOrderParameter() const {
         pyOrderParameters.append(std::abs(op)); // Use the absolute value of the order parameter
     }
 
-    // Import the Python script and call the plot_data function
-    py::object plot_data = py::module::import("pyplot/PlotOrderParameter.py").attr("plot_data");
+    // Get the path to the current source file
+    std::string currentFile = __FILE__;
+
+    // Remove the filename to get the directory
+    std::string currentDir = currentFile.substr(0, currentFile.rfind('/'));
+
+    // Construct the path to the Python script
+    std::string scriptPath = currentDir + "/../pyplot/PlotOrderParameter.py";
+
+    // Read the Python script
+    std::ifstream file(scriptPath);
+    std::string script((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+    // Execute the Python script
+    py::exec(script);
+
+    // Call the plot_data function
+    py::object plot_data = py::globals()["plot_data"];
     plot_data(pySimulationTimes, pyOrderParameters, "plot.png");
 }

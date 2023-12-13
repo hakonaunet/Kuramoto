@@ -2,9 +2,7 @@
 
 #include "Application.hpp"
 
-Application::Application() : ui(sharedData),  grid(sharedData) {
-    // Initialize the application
-}
+Application::Application() : grid(sharedData), ui(sharedData) {}
 
 void Application::run() {
     sf::Vector2f windowsize(1350, 1350);
@@ -50,6 +48,12 @@ void Application::run() {
             // Reset the flag
             sharedData.reset();
             sharedData.startSimulation = false;
+        }
+
+            // Check if the order parameter should be plotted
+        if (sharedData.shouldPlotOrderParameter) {
+            grid->plotOrderParameter();
+            sharedData.shouldPlotOrderParameter = false;
         }
 
         // Clear the window

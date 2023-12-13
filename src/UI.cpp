@@ -54,8 +54,8 @@ void UI::render() {
 
     ImGui::SameLine(); // Display the following widgets on the same line
 
-    // Button to set sharedData.calculateKuramotoOrderParameter
-    ImGui::Checkbox("Calculate Order Parameter", &sharedData.calculateKuramotoOrderParameter);
+    // Button to set sharedData.trackKuramotoOrderParameter
+    ImGui::Checkbox("Calculate Order Parameter", &sharedData.trackKuramotoOrderParameter);
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Enable to calculate the Kuramoto order parameter");
     }
@@ -94,7 +94,7 @@ void UI::render() {
     }
 
     if (ImGui::Button("Plot Order Parameter")) {
-        //grid.plotOrderParameter(grid.simulationTimes, grid.orderParameters); 
+        sharedData.shouldPlotOrderParameter = true;
     }
     ImGui::End();
 }

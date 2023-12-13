@@ -5,6 +5,7 @@
 #include <random>
 #include <complex>
 #include <iostream>
+#include <fstream>
 
 #include "Oscillator.hpp"
 #include "SharedData.hpp"
